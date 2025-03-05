@@ -1,2 +1,5 @@
+import numpy as np
+import neurokit as nk
 
-print('hi')
+def generate_delayed_embeddings():
+    pass
