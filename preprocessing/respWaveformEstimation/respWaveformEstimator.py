@@ -15,6 +15,8 @@ class RespWaveformEstimator:
         self.window_size = window_size
         self.angle_threshold = angle_threshold
 
+        self.accel
+
     def estimateRespWaveform(self, accel_data):
 
         # Low-pass filter
@@ -23,9 +25,9 @@ class RespWaveformEstimator:
         # Detect large motions
         static_mask = detect_large_motions(filtered_data, angle_threshold=self.angle_threshold)
 
-        # doing this is wrong because it could cause the time series to be discontinuous!!
+        # doing this (keeping only static data) is wrong because it could cause the time series to be discontinuous!!
         # TODO: REVISE
-        
+
         # Keep only static data
         static_accel_data = filtered_data[static_mask]
 
