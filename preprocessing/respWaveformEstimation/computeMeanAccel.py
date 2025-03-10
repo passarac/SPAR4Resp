@@ -1,6 +1,6 @@
 import numpy as np
 
-def compute_mean_accel(accel_data, window_size=32):
+def compute_mean_accel(accel_data, window_size=30):
     """
     Compute a windowed average of the 3D accelerometer data for each sample index t.
     This serves as the estimated gravity vector (āₜ).
