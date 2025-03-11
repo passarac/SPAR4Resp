@@ -61,7 +61,7 @@ class HARClassifier():
         # Convert the dataframe to a numpy array
         dat_np = self.input_data.to_numpy()
         # Extract sliding windows using the function generate_sliding_windows
-        self.data_windows = segmentation.generate_sliding_windows(dat_np, self.WINDOW_SIZE, 0)
+        self.data_windows = segmentation.generate_sliding_windows(dat_np, self.window_size, 0)
         # Seperate accelerometer data from the other columns
         accelerometer_data_windows = self.data_windows[:, :, len(self.original_columns)-3:]
         # Normalize accelerometer data
@@ -81,8 +81,8 @@ class HARClassifier():
         In this function, we want to generate an output dataframe
         '''
         # Repeating the rows in self.pred_probabilities and self.pred_labels by window size
-        pred_probabilities = np.repeat(self.pred_probabilities, self.WINDOW_SIZE, axis=0)
-        pred_labels = np.repeat(self.pred_labels, self.WINDOW_SIZE)
+        pred_probabilities = np.repeat(self.pred_probabilities, self.window_size, axis=0)
+        pred_labels = np.repeat(self.pred_labels, self.window_size)
         # reshape data windows
         original_dat = self.data_windows.reshape(-1, len(self.original_columns))
         # get corresponding activity labels
