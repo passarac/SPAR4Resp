@@ -3,7 +3,8 @@ import numpy as np
 from gtda.diagrams import PersistenceEntropy
 from gtda.homology import VietorisRipsPersistence
 
-def betti_numbers(ak: np.ndarray, bk: np.ndarray) -> np.ndarray:
+
+def betti_numbers(ak: np.ndarray, bk: np.ndarray) -> tuple[int, int]:
     """
     Computes Betti numbers using Persistent Homology for the SPAR attractor projection.
 
@@ -16,15 +17,19 @@ def betti_numbers(ak: np.ndarray, bk: np.ndarray) -> np.ndarray:
 
     Returns:
     --------
-    np.ndarray
-        Array of Betti numbers `[β₀, β₁]`, where:
+    tuple[int, int]
+        Betti numbers (β₀, β₁), where:
         - β₀ represents the number of connected components.
         - β₁ represents the number of loops in the attractor.
     """
     spar_data = np.vstack((ak, bk)).T  # Convert to 2D array
     VR = VietorisRipsPersistence(metric="euclidean", homology_dimensions=[0, 1])
     diagrams = VR.fit_transform([spar_data])
-    return np.array([len(d) for d in diagrams[0]])  # Extract Betti numbers
+
+    β0 = len(diagrams[0][0])  # Number of connected components
+    β1 = len(diagrams[0][1])  # Number of loops
+
+    return β0, β1
 
 
 

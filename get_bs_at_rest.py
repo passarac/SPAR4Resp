@@ -18,10 +18,14 @@ def process_subject_data(base_dataset_path: Path):
             print(f"Processing file {HAR_file}...")
             filename = Path(HAR_file).name
 
+            # remove .csv from filename
+            filename = filename.split(".")[0]
+
             save_path = base_dataset_path / "breathingSignal" / subject_id / filename
             save_path.parent.mkdir(parents=True, exist_ok=True)
+            
 
-            if (save_path / ".npz").exists():
+            if (save_path.with_suffix(".npz")).exists():
                 print(f"File {HAR_file} already processed. Skipping...")
                 continue
 
@@ -37,6 +41,8 @@ def process_subject_data(base_dataset_path: Path):
 
             # Remove the last column (Pandas timestamp column)
             list_windows = list_windows[:, :, :-1]
+
+            # print(f">> Number of windows: {len(list_windows)}")
 
             # Save segmented breathing signal windows
             np.savez_compressed(save_path, array=list_windows)

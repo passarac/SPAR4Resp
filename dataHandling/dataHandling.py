@@ -56,6 +56,24 @@ def get_breathingSignal_subject_folders(base_dataset_path: str):
 
 
 
+def get_SPAR_subject_folders(base_dataset_path: str):
+    """
+    Get all subject folders containing SPAR data.
+
+    Parameters:
+    - base_dataset_path (Path): The base dataset folder.
+
+    Returns:
+    - subject_folders (list): List of subject folders containing SPAR data
+    """
+    base_dataset_path = Path(base_dataset_path)
+    SPAR_folder = base_dataset_path / "SPAR_results" / "attractor"
+    subject_folders = glob.glob(str(SPAR_folder / "*"))
+    return subject_folders
+
+
+
+
 def get_raw_respeck_files(subject_folder: str):
     """
     Get all raw Respeck files for a given subject folder.
@@ -101,3 +119,18 @@ def get_breathingSignal_files(subject_folder: str):
     subject_folder = Path(subject_folder)
     breathingSignal_files = glob.glob(str(subject_folder / "*.npz"))
     return breathingSignal_files
+
+
+def get_SPAR_files(subject_folder: str):
+    """
+    Get all SPAR files for a given subject folder.
+
+    Parameters:
+    - subject_folder (Path): The subject folder containing SPAR data.
+
+    Returns:
+    - SPAR_files (list): List of SPAR filepaths for the subject.
+    """
+    subject_folder = Path(subject_folder)
+    SPAR_files = glob.glob(str(subject_folder / "*.pkl"))
+    return SPAR_files

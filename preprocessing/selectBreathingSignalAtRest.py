@@ -58,11 +58,15 @@ def select_and_segment_breathing_signal_at_rest(df, timestamp_column='interpolat
 
     # Select timestamp, breathing signal, and activity classification columns
     df_oi = df[[timestamp_column, breathing_signal_column, mappedActivity_column]]
+
     # remove first and last 50 rows because those always seem to be the most 'spikey'
     df_oi = df_oi.iloc[50:-50]
 
     # select only the stationary activities
     df_oi = df_oi[df_oi[mappedActivity_column].isin(stationary_activities)]
+
+    # remove rows where breathing_signal_column is NaN
+    df_oi = df_oi.dropna(subset=[breathing_signal_column])
 
     df_oi['new_timestamp'] = pd.to_datetime(df_oi[timestamp_column], unit='ms')
     split_dfs = split_by_time_gaps(df_oi, timestamp_column='new_timestamp', gap_size=1)

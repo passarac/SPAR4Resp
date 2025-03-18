@@ -1,4 +1,4 @@
-from respiratoryFeatures import *
+from .respiratoryFeatures import *
 
 
 def calculate_TS_breathFeatures(timestamps, signal):

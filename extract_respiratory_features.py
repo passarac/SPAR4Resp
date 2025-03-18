@@ -1,12 +1,13 @@
 import pandas as pd
 import numpy as np
-from preprocessing.SPAR.generateSPARAttractor import *
 import glob
+import pickle
 from pathlib import Path
 from dataHandling.dataHandling import *
-import pickle
+from preprocessing.respWaveformFeatExtraction.respiratoryFeatures import *
+from preprocessing.respWaveformFeatExtraction.calculateContinuousBreathFeatures import *
 
-def apply_SPAR(base_dataset_path: Path):
+def extract_respiratory_features(base_dataset_path: Path):
     subject_folders = get_breathingSignal_subject_folders(str(base_dataset_path))
 
     for subject_folder in subject_folders:
@@ -25,13 +26,8 @@ def apply_SPAR(base_dataset_path: Path):
             filename = filename.split(".")[0]
 
             # Define save path
-            save_path = base_dataset_path / "SPAR_results" / "attractor" / subject_id / filename
+            save_path = base_dataset_path / "respiratoryFeatures" / "continuous" / subject_id / filename
             save_path.parent.mkdir(parents=True, exist_ok=True)
-
-            # Skip if file already processed
-            #if (save_path.with_suffix(".pkl")).exists():
-            #    #print(f"File {bs_file} already processed. Skipping...")
-            #    continue
 
             # Load breathing signal data
             # It has shape (N, 750, 3) where:
@@ -46,42 +42,26 @@ def apply_SPAR(base_dataset_path: Path):
                 timestamp = arr[:, 0]
                 activity = arr[:, 2]
                 try:
-                    # Apply SPAR
-                    # Generate delayed embeddings
-                    embedded_rsp = embed_time_series(rsp_signal, N=3, tau=5)
-                    # SPAR 2D Projection
-                    a_k, b_k = compute_spar_projection(embedded_rsp, N=3, k=1)
+                    # Extract respiratory features
+                    # Extract continuous respiratory features
+                    resp_features = calculate_TS_breathFeatures(timestamps=timestamp, signal=rsp_signal)
                 except Exception as e:
                     print("Error encountered, skipping this data window...")
                     continue
 
-                # combine timestamp, rsp_signal, activity, a_k, and b_k
-                original_arr = np.column_stack((timestamp, rsp_signal, activity))
-                SPAR_projection = np.column_stack((a_k, b_k))
-                res = {
-                    "original_arr": original_arr,
-                    "SPAR_projection": SPAR_projection
-                }
+                result_arr.append(resp_features)
 
-
-                result_arr.append(res)
-
-                print(res["SPAR_projection"])
-
-                break
-
-            print(np_dat.shape[0])
-            print(len(result_arr))
-            # Save SPAR data
+            # print(len(result_arr))
+            # Save respiratory feature data
             with open(str(save_path) + ".pkl", "wb") as f:
                 pickle.dump(result_arr, f)
-            break
-        break
+            #break
+        #break
 
 
 def main():
     base_dataset_path = Path("G:\\Shared drives\\PhD\\Data\\SMILE")
-    apply_SPAR(base_dataset_path)
+    extract_respiratory_features(base_dataset_path)
 
 if __name__ == "__main__":
     main()
