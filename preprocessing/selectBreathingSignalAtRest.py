@@ -68,20 +68,36 @@ def select_and_segment_breathing_signal_at_rest(df, timestamp_column='interpolat
     # remove rows where breathing_signal_column is NaN
     df_oi = df_oi.dropna(subset=[breathing_signal_column])
 
+    # convert timestamp to datetime
     df_oi['new_timestamp'] = pd.to_datetime(df_oi[timestamp_column], unit='ms')
-    split_dfs = split_by_time_gaps(df_oi, timestamp_column='new_timestamp', gap_size=1)
+
+    try:
+        # split the dataframe by time gaps
+        split_dfs = split_by_time_gaps(df_oi, timestamp_column='new_timestamp', gap_size=1)
+    except Exception as e:
+        print(f"Error splitting dataframe by gaps: {e}")
 
     # iterate over the split dataframes
     for df in split_dfs:
+
         # check if the length of the dataframe is at least 750 (1 minute)
         if len(df) < 750:
-            continue
+            continue # skip this dataframe
+
         # convert to numpy
         bs_np = df.to_numpy()
-        # there are 750 data samples in one minute
-        data_windows = generate_sliding_windows(bs_np, window_size=window_size)
+
+        # generate sliding windows
+        try:
+            data_windows = generate_sliding_windows(bs_np, window_size=window_size)
+        except Exception as e:
+            print(f"Error generating sliding windows: {e}")
+            continue
+
         list_windows.append(data_windows)
 
+    # concatenate the list of windows
     concat_list_windows = np.concatenate(list_windows, axis=0)
+
     return concat_list_windows
 
